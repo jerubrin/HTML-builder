@@ -1,10 +1,8 @@
 const path = require('path')
 const fs = require('fs')
 
-const stylesPath = path.join(__dirname, "styles")
-const bundlePath = path.join(__dirname, "project-dist", "bundle.css")
-
-async function createBundle() {
+async function buildCss(stylesPath, bundlePath) {
+  console.log('Building CSS...')
   const files = await getCssFiles(stylesPath)
   packAllToBundle(bundlePath, files)
 }
@@ -23,11 +21,12 @@ const getCssFiles = async (dir) => new Promise((resolve, reject) => {
 
 const packAllToBundle = async (bundleFile, files) => {
   const wStream = fs.createWriteStream(bundleFile)
-  files.forEach(file => {
-    const rStream = fs.createReadStream(file)
-    rStream.pipe(wStream)
-  });
+  files.forEach(file => writeFile(file, wStream))
 }
 
-//run this
-createBundle()
+const writeFile = async (file, wStream) => {
+  const rStream = fs.createReadStream(file)
+  rStream.pipe(wStream)
+}
+
+module.exports = buildCss

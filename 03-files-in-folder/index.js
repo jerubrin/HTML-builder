@@ -19,15 +19,11 @@ async function getFileInfo(fullPath, file) {
   }))
 }
 
-function bytesToKbytes(byte) {
-  return (byte/1024).toFixed(2) + 'kb'
-}
-
 function logFileInfo(file, fileName) {
   console.log(
     (path.parse(fileName).name) + ' - ' +
     (path.extname(fileName).substring(1)) + ' - ' +
-    (file.size > 1024 ? bytesToKbytes(file.size) : file.size)
+    file.size
   )
 }
 

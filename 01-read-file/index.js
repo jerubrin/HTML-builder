@@ -7,4 +7,4 @@ const chunks = []
 
 rStream.on('error', err => console.error(`Error: ${err}`))
 rStream.on('data', chunk => chunks.push(chunk))
-rStream.on('end', () => stdout.write(chunks.join('')))
+rStream.on('end', () => stdout.write(chunks.join('')+'\n'))

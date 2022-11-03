@@ -4,32 +4,32 @@ const path = require('path');
 const readline = require('readline');
 const fs = require('fs')
 const textFilePath = path.join(__dirname, 'text.txt')
-const wStrezm = fs.createWriteStream(textFilePath, {flags: 'a'})
 
 const readLine = readline.createInterface({ input: process.stdin, output: process.stdout });
-fs.exists(textFilePath, exists => startWriting(exists))
 
-const startWriting = exists => {
+const startWriting = () => {
+  let isStarted = true
   const writeToFile = text => {
     //check is text needed to add '\n' at the end of the string
     if(text != '') {
-      exists ? text = '\n' + text : exists = true
+      isStarted ? isStarted = false : text = '\n' + text
     }
+    const wStrezm = fs.createWriteStream(textFilePath, {flags: 'a'})
     wStrezm.write(text, 'utf-8', (err) => {
-      if(err) console.error('Error:',err)
+      if(err) console.error('Error:', err)
     })
+    wStrezm.close()
   }
   
   //create file
-  writeToFile('')
+  fs.createWriteStream(textFilePath).write('')
   
   stdout.write(
-    (exists
-      ? 'File "text.txt" is modifying...\n'
-      : 'File "text.txt" has been created!\n') +
+    'File "text.txt" has been created!\n' +
     'Enter your text: \n' +
     '> '
-  )
+  );
+
   //stdout.write()
   readLine.on('line', text => {
     if(text.includes('exit')) process.exit();
@@ -37,5 +37,10 @@ const startWriting = exists => {
     stdout.write('> ')
   })
   
-  process.on('exit', () => {console.log('Goodbye, my friend! I\'ll newer forgot you! :(')})
+  process.on('exit', () => {
+    stdout.cursorTo(0)
+    stdout.write('Goodbye, my friend! I\'ll never forget you! :(\n')
+  })
 }
+
+startWriting()
