@@ -1,3 +1,4 @@
+//Вся основная логика в этих 3-х фалах:
 const buildHTML = require('./js-builder/html-builder');
 const buildCss = require('./js-builder/css-bundler');
 const copyAssets = require('./js-builder/assets-copyier');
