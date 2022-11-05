@@ -11,6 +11,10 @@ const makeDir = curPath => new Promise((resolve, reject) => {
   resolve()
 })
 
+const rmDir = curPath => new Promise(resolve => {
+  fs.rm(curPath, {recursive: true, force: true}, () => resolve())
+})
+
 const getFileList = (fromPath, copyPath) => new Promise((resolve, reject) => {
   fs.readdir(fromPath, {withFileTypes: true}, (err, files) => {
     if(err) return reject(err.message)
@@ -33,7 +37,8 @@ const copyFile = (copyFile, toDir) => {
 }
 
 const copyFolder = (filesPath, copyPath) => {
-  makeDir(copyPath)
+  rmDir(copyPath)
+    .then(() => makeDir(copyPath))
     .then(() => getFileList(filesPath, copyPath))
     .then(fileLists => 
       fileLists.forEach(file => {
