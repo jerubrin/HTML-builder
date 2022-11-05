@@ -1,21 +1,14 @@
 const path = require('path');
 const fs = require('fs');
-const { create } = require('domain');
-const { resolve } = require('path');
 const filesPath = path.join(__dirname, "files")
 const copyPath = path.join(__dirname, "files-copy")
 
-const isDirectoryExists = async curPath => new Promise((resolve, reject) => {
-  fs.readdir(path.dirname(curPath), {withFileTypes: true}, (err, files) => {
-    if(err) return reject(err.message)
-    const hasDirectory = files.reduce((c, file) => c || (file.name == path.basename(curPath) && file.isDirectory()) ,false) 
-    resolve(hasDirectory)
-  })
+const makeDir = curPath => new Promise((resolve, reject) => {
+  fs.mkdir(curPath, {recursive: true}, err => { if(err) reject(err.message); resolve() })
 })
 
-const makeDir = curPath => new Promise((resolve, reject) => {
-  fs.mkdir(curPath, err => { if(err) reject(err.message) })
-  resolve()
+const rmDir = curPath => new Promise(resolve => {
+  fs.rm(curPath, {recursive: true, force: true}, () => resolve())
 })
 
 const getFileList = fromPath => new Promise((resolve, reject) => {
@@ -36,11 +29,11 @@ const copyFile = (copyFile, toDir) => {
 }
 
 const copyFolder = (filesPath, copyPath) => {
-  isDirectoryExists(copyPath)
-  .then(hasDirectory => { if(!hasDirectory) makeDir(copyPath) })
+  rmDir(copyPath)
+  .then(() => makeDir(copyPath))
   .then(() => getFileList(filesPath))
   .then(fileLists => 
-    fileLists.forEach(file => { 
+    fileLists.forEach(file => {
       copyFile(path.join(filesPath, file), copyPath)
     }))
   .catch(err => console.error(err))

@@ -15,7 +15,19 @@ async function buildHTML(inFile, outFile) {
   });
 
   rl.on('line', input => {
-    linesArr.push(input)
+    if(input.search('{{') > 0 && input.search('}}') > input.search('{{')) {
+      const _arr = input.split('{')
+      const _before = _arr[0] //spaces before block
+        .split('')
+        .filter(ch => ch == ' ')
+        .join('')
+      const _componentNames = _arr
+        .filter((it, i, arr) => arr[i - 1] == '')
+        .map(it => it.split('}')[0])
+      _componentNames.forEach(comp => linesArr.push(`${_before}{{${comp}}}`))
+    } else {
+      linesArr.push(input)
+    }
   })
   rl.on('close', () => fillArr(componentsDir, wStream))
 }
